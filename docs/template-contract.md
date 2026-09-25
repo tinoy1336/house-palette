@@ -32,7 +32,11 @@ What the renderer refuses, with exit `2` and a message on standard error:
 
 A template that fails writes nothing: the render happens in memory first, and the
 output is written to a temporary file and renamed into place, so a file is never
-half written and a previous output survives a failed render.
+half written and a previous output survives a failed render. A write that cannot
+be performed — the output path is a directory, its directory refuses the write —
+is also exit `2`, with the reason on standard error; the destination directory is
+left as it was and no temporary file remains. A missing parent directory of
+`--out` is created.
 
 ## What a template receives
 
@@ -61,11 +65,22 @@ type Token = {
   purpose: string // one sentence: what the value is for
   hex?: string // `#rrggbb`, lower case
   alpha?: number // 0 to 1, present only when the token carries opacity
-  solid?: string // the opaque stand-in, absent for a token with no colour
+  solid?: string // the opaque stand-in, present exactly when `hex` is
   alias?: string // the token this one is an alias of
   frozen: boolean // a value tuned by eye, carried unchanged
 }
 ```
+
+Two things a template relies on and does not have to guess:
+
+- **`solid` is present exactly when the token carries a colour.** For a token that
+  carries `alpha` it is the opaque value that reads the same: the palette's
+  declared composite when it has one, otherwise the token painted over
+  `surface.base`. For a token that is already opaque it is its own `hex`.
+- **An alias carries its target's resolved value**, not a formula: `hex`, `alpha`
+  and `solid` are the target's, and `alias` names the token they came from.
+  `palette.find("border.divider").hex` is the value of the token it aliases, and a
+  template may treat the two as one decision.
 
 Iterate `Object.values(palette.tokens)` for a stable source order, or address one
 by name:
@@ -75,10 +90,8 @@ const accent = context.palette.find("accent.primary")
 const line = `accent ${accent.hex}\n`
 ```
 
-`solid` is what a token reads as against `surface.base`: the palette's declared
-composite when it has one, otherwise the token painted over that base. A carrier
-that cannot express opacity takes `solid`; a carrier that can takes `hex` and
-`alpha`.
+A carrier that cannot express opacity takes `solid`; a carrier that can takes
+`hex` and `alpha`. Both are already on the token, so a template computes neither.
 
 ### `context.colour`
 
@@ -148,10 +161,14 @@ output:
 ```
 
 It holds digests, never paths, so it is identical in every checkout and can be
-committed beside the generated file. `--check` compares the output bytes and the
-record: exit `0` current, `1` drifted (`missing`, `stale`, `record-missing`,
-`record-stale` naming the field that moved, `palette-mismatch` when
-`--expect-palette` disagrees), `2` when the render could not happen.
+committed beside the generated file. **Identity is the tree digests; the recorded
+revision is provenance only** — the check never compares it, so a palette checkout
+that moved without its content moving leaves a gate current. `--check` compares
+the output bytes and the record: exit `0` current, `1` drifted (`missing`,
+`stale`, `record-missing`, `record-stale` naming the field that moved,
+`palette-mismatch` when `--expect-palette` disagrees), `2` when the render could
+not happen — including a stored record that is not a record, which is reported by
+the field that is missing or malformed and is never read as drift.
 
 ## Rules a template must respect
 

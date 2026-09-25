@@ -92,7 +92,12 @@ export function paletteRevision(palettePath: string): string {
 }
 
 export function loadPaletteRevision(palettePath: string, revision?: string): { palette: Palette; sha256: string; revision: string } {
-  const text = readFileSync(palettePath, "utf8")
+  let text: string
+  try {
+    text = readFileSync(palettePath, "utf8")
+  } catch (error) {
+    throw new Error(`palette ${palettePath} could not be read: ${(error as Error).message}`)
+  }
   return {
     palette: loadPalette(palettePath),
     sha256: sha256(text),
@@ -181,6 +186,11 @@ export function compareOutput(path: string, content: string): "missing" | "stale
   return readFileSync(path, "utf8") === content ? undefined : "stale"
 }
 
+/**
+ * Reads a stored record, refusing anything that is not one: a file whose fields
+ * are missing or malformed cannot answer for an output, so it ends the run as a
+ * render that could not happen rather than as drift.
+ */
 export function readRecord(path: string): RenderRecord {
   let parsed: unknown
   try {
@@ -188,11 +198,28 @@ export function readRecord(path: string): RenderRecord {
   } catch (error) {
     throw new Error(`record ${path} could not be read: ${(error as Error).message}`)
   }
-  if (typeof parsed !== "object" || parsed === null) throw new Error(`record ${path} is not an object`)
-  return parsed as RenderRecord
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    throw new Error(`record ${path} is not a record: it is not an object`)
+  }
+  const record = parsed as Partial<RenderRecord>
+  const isDigest = (value: unknown): boolean => typeof value === "string" && /^[0-9a-f]{64}$/.test(value)
+  if (record.version !== 1) throw new Error(`record ${path} is not a record: version must be 1`)
+  if (!isDigest(record.template?.sha256)) throw new Error(`record ${path} is not a record: template.sha256 must be a sha256 digest`)
+  if (!isDigest(record.palette?.sha256)) throw new Error(`record ${path} is not a record: palette.sha256 must be a sha256 digest`)
+  if (typeof record.palette?.revision !== "string" || record.palette.revision === "") {
+    throw new Error(`record ${path} is not a record: palette.revision must be a revision string`)
+  }
+  if (!isDigest(record.output?.sha256)) throw new Error(`record ${path} is not a record: output.sha256 must be a sha256 digest`)
+  return record as RenderRecord
 }
 
-/** The fields of a stored record that no longer match the run that would produce it. */
+/**
+ * The fields of a stored record that no longer match the run that would produce
+ * it. Only content decides this: the template bytes, the palette bytes and the
+ * output bytes. The palette revision is provenance — it says which checkout a
+ * render came from — so a checkout that moved with the same palette is current,
+ * and a gate never fails over it.
+ */
 export function differingFields(expected: RenderRecord, found: RenderRecord): string[] {
   const differences: string[] = []
   const compare = (label: string, a: string | number | undefined, b: string | number | undefined) => {
@@ -202,7 +229,6 @@ export function differingFields(expected: RenderRecord, found: RenderRecord): st
   compare("record version", expected.version, found.version)
   compare("template sha256", expected.template?.sha256, found.template?.sha256)
   compare("palette sha256", expected.palette?.sha256, found.palette?.sha256)
-  compare("palette revision", expected.palette?.revision, found.palette?.revision)
   compare("output sha256", expected.output?.sha256, found.output?.sha256)
   return differences
 }

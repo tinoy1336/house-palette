@@ -10,8 +10,16 @@ writes exactly what the template returns. Every template belongs to the project
 that uses it, lives in that project's own repository, and is committed beside the
 file it produces.
 
-Nothing here defines geometry, motion, glyphs or layout. Nothing here names a
-program, a toolkit or a file format.
+Nothing here defines geometry, motion, glyphs or layout.
+
+The rule this repository keeps: **the palette's names and keys, the renderer and
+the example carry no consumer, product or toolkit name and no carrier format
+name.** A value is named for its purpose, and the renderer knows no destination,
+so adding a consumer never adds a token here. A guard enforces the rule over
+every text file in the tree, with one named exception: the guard's own file holds
+the list of refused words, and prose may name the formats this repository's own
+artifacts are written in — its source, schema and record are JSON, and the
+example renders a Markdown sheet.
 
 ## What is in the repository
 
@@ -87,7 +95,7 @@ bin/render --template <path> --out <path> --check --expect-palette <sha256>
 | Option | What it does |
 |---|---|
 | `--template <path>` | The template module to render. |
-| `--out <path>` | The file to write, or the file to compare against with `--check`. |
+| `--out <path>` | The file to write, or the file to compare against with `--check`. A missing parent directory is created. |
 | `--check` | Renders in memory and compares. Writes nothing. |
 | `--record <path>` | A JSON record of what produced the output: written, or compared by `--check`. |
 | `--palette <path>` | The palette source. Default: `palette.json` beside the command. |
@@ -100,7 +108,13 @@ bin/render --template <path> --out <path> --check --expect-palette <sha256>
 |---|---|
 | `0` | The write succeeded; or `--check` found the output and the record current. |
 | `1` | Drift: the output is missing, the output differs from a fresh render, the record differs (the template or the palette moved), or the palette is not the digest that was pinned with `--expect-palette`. The reason is printed, one line each, naming the file and the digest it moved from. |
-| `2` | The render could not happen: bad arguments, a palette that is missing or fails the schema, a template that is missing, malformed, thrown, or returning something other than a string. The reason is printed on standard error. |
+| `2` | The render could not happen: bad arguments, a palette that is missing or fails the schema, a template that is missing, malformed, thrown, or returning something other than a string, a record that is not a record, or a write that cannot be performed. The reason is printed on standard error. |
+
+A write goes to a temporary file beside the destination and is renamed into
+place, so a reader of the output sees the whole previous file or the whole new
+one, never a half-written mix. A write that fails — the destination is a
+directory, the directory refuses the write — exits `2`, leaves the destination
+directory as it found it, and leaves no temporary file behind.
 
 Everything prints one line per fact and nothing else, so a consuming repository
 can gate its commits on the exit code and quote the printed reason when it fails.
@@ -122,9 +136,12 @@ template may use arrives in `context`:
 - `context.provenance` — `generator`, `template.sha256`, `palette.sha256` and
   `palette.revision`, for a template that stamps its own header.
 
-Each token is `{ name, group, purpose, hex?, alpha?, solid?, alias?, frozen }`,
-where `solid` is what the token reads as on `surface.base`: the declared
-composite when the palette has one, otherwise the token painted over that base.
+Each token is `{ name, group, purpose, hex?, alpha?, solid?, alias?, frozen }`.
+`solid` is present for every token that carries a colour: the token's own hex
+when it is already opaque, and what it reads as on `surface.base` — the declared
+composite when the palette has one, otherwise the token painted over that base —
+when it carries opacity. A token with only an opacity has neither `hex` nor
+`solid`.
 
 `examples/palette-sheet.template.ts` is a complete worked example: it renders the
 whole palette as a Markdown sheet, table per group, and closes with a contrast
@@ -173,9 +190,15 @@ The record is identity by content digest, and it holds no path:
 }
 ```
 
-So a palette revision is identified without naming a repository, a path or a
-date, and two checkouts render identical records. A consuming repository pins the
-revision it rendered against in two steps:
+So a palette is identified without naming a repository or a path, and two
+checkouts of one palette render identical records. **Identity is the three
+digests; the recorded revision is provenance** — it says which checkout a render
+came from — and the check never compares it, so a palette checkout that moves
+without its content changing leaves a consumer's gate current. Two runs render
+identical records when they resolve the same palette content and pass the same
+revision or resolve the same commit; a palette with no repository beside it
+records `unversioned`. A consuming repository pins the palette it rendered
+against in two steps:
 
 1. **The record.** Committed beside the generated file, it names the palette
    digest the output was produced from. Nothing else detects that the palette
@@ -201,8 +224,11 @@ node --test tests/*.test.ts
 The suite is offline and dependency-free. It covers the schema and every rule in
 it (each proved by a fixture that breaks it), the palette's own arithmetic and its
 tuned values, the colour helpers, the engine (loading, a malformed template, a
-throwing template, a non-string return, no partial write), the check path with
-its exit codes, the example end to end against its committed golden output, the
-absence of any consumer or format vocabulary in the repository, and determinism:
-two runs are byte-identical, and so are a run from another working directory and
-a run with the palette loaded from a copy at another path.
+throwing template, a non-string return, no partial write, a write that cannot
+happen, the parent directory of an output, and the palette revision default), the
+check path with its exit codes (including a record that is not a record, and a
+gate decided by palette content while the recorded revision is provenance only),
+the example end to end against its committed golden output, the absence of any
+consumer or carrier-format vocabulary from every text file in the tree, and
+determinism: two runs are byte-identical, and so are a run from another working
+directory and a run with the palette loaded from a copy at another path.

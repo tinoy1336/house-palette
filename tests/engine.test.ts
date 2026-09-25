@@ -5,12 +5,17 @@
  */
 
 import assert from "node:assert/strict"
-import { existsSync, readFileSync, writeFileSync } from "node:fs"
+import { chmodSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
 import { test } from "node:test"
-import { planRender, sha256, type RenderRequest } from "../src/engine.ts"
+import { paletteRevision, planRender, sha256, type RenderRequest } from "../src/engine.ts"
 import { loadPalette } from "../src/palette.ts"
 import { literalTemplate, repoPalette, run, withTempDir, writeInto } from "./helpers.ts"
+
+/** Any temporary file a run left behind: a write goes through one and removes it. */
+function temporaries(dir: string): string[] {
+  return (readdirSync(dir, { recursive: true }) as string[]).filter((entry) => entry.includes(".tmp-"))
+}
 
 function request(dir: string, overrides: Partial<RenderRequest> = {}): RenderRequest {
   return {
@@ -133,6 +138,56 @@ test("the command reports what it wrote and records, and writes both files whole
     const record = JSON.parse(readFileSync(options.record as string, "utf8")) as { palette: { revision: string }; output: { sha256: string } }
     assert.equal(record.palette.revision, "example")
     assert.equal(record.output.sha256, sha256("rendered\n"))
+  })
+})
+
+test("an existing output is replaced whole: the write goes through a rename, not the destination itself", async () => {
+  await withTempDir(async (dir) => {
+    const options = request(dir)
+    writeInto(options.out, "the bytes a consumer is reading\n")
+    // A read-only destination in a writable directory separates the two
+    // mechanisms: a write into the destination itself is refused, while a
+    // temporary file renamed over it succeeds. The consumer therefore reads
+    // either the whole old file or the whole new one, never a truncated mix.
+    chmodSync(options.out, 0o444)
+    const result = await run(["--template", options.template, "--out", options.out, "--palette", options.palette, "--revision", "example"])
+    assert.equal(result.code, 0, result.err.join("\n"))
+    assert.equal(readFileSync(options.out, "utf8"), "rendered\n")
+    assert.deepEqual(temporaries(dir), [], "the write left a temporary file behind")
+  })
+})
+
+test("a write that cannot happen is exit 2, and leaves the destination directory alone", async () => {
+  await withTempDir(async (dir) => {
+    const destination = join(dir, "out")
+    mkdirSync(destination, { recursive: true })
+    const kept = writeInto(join(destination, "kept.txt"), "kept\n")
+    const result = await run(["--template", literalTemplate(dir, "rendered\n"), "--out", destination, "--palette", repoPalette, "--revision", "example"])
+    assert.equal(result.code, 2, result.out.join("\n"))
+    assert.ok(result.err.join("\n").length > 0, "a failed write said nothing")
+    assert.equal(readFileSync(kept, "utf8"), "kept\n", "a failed write disturbed the destination directory")
+    assert.deepEqual(temporaries(dir), [], "a failed write left a temporary file behind")
+  })
+})
+
+test("the output's parent directory is created when it is missing", async () => {
+  await withTempDir(async (dir) => {
+    const out = join(dir, "missing", "deeper", "output.txt")
+    const result = await run(["--template", literalTemplate(dir, "rendered\n"), "--out", out, "--palette", repoPalette, "--revision", "example"])
+    assert.equal(result.code, 0, result.err.join("\n"))
+    assert.equal(readFileSync(out, "utf8"), "rendered\n")
+  })
+})
+
+test("the palette revision default resolves the palette's own commit, and unversioned without one", async () => {
+  assert.match(paletteRevision(repoPalette), /^[0-9a-f]{7,40}$/, "the palette sits in a repository here")
+  await withTempDir(async (dir) => {
+    const vendored = writeInto(join(dir, "palette.json"), readFileSync(repoPalette, "utf8"))
+    writeInto(join(dir, "palette.schema.json"), readFileSync(join(repoPalette, "..", "palette.schema.json"), "utf8"))
+    assert.equal(paletteRevision(vendored), "unversioned")
+    const plan = await planRender({ template: literalTemplate(dir, "x\n"), out: join(dir, "nested", "out.txt"), palette: vendored })
+    assert.equal(plan.record.palette.revision, "unversioned")
+    assert.equal(plan.record.palette.sha256, sha256(readFileSync(repoPalette, "utf8")), "a copy of one palette is the same palette")
   })
 })
 

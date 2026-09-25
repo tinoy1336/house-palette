@@ -90,6 +90,14 @@ test("a token name is a group and a key, and the group is the one it sits in", (
   }
 })
 
+test("a token carries an opaque stand-in exactly when it carries a colour", () => {
+  for (const token of Object.values(palette.tokens)) {
+    assert.equal(token.solid !== undefined, token.hex !== undefined, `${token.name}: hex ${token.hex}, solid ${token.solid}`)
+    if (token.hex !== undefined && token.alpha === undefined) assert.equal(token.solid, token.hex, `${token.name} is opaque, so its stand-in is its own colour`)
+    if (token.hex !== undefined && token.alpha !== undefined) assert.match(String(token.solid), /^#[0-9a-f]{6}$/, token.name)
+  }
+})
+
 test("an unknown token name is an error, not an empty value", () => {
   assert.throws(() => palette.find("text.nonexistent"), /no such token: text\.nonexistent/)
 })

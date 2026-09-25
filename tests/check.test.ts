@@ -131,6 +131,86 @@ test("a missing record is drift, an unreadable record is a render that cannot ha
   })
 })
 
+test("the gate is decided by content: the same palette under another revision is current", async () => {
+  await withTempDir(async (dir) => {
+    const files = fixture(dir)
+    await run(files.args)
+
+    // A different revision string over the same palette bytes: the checkout
+    // moved, the palette did not, so the output a consumer reads cannot change.
+    const otherRevision = [...files.args, "--check"]
+    otherRevision[otherRevision.indexOf("--revision") + 1] = "another-revision"
+    const renamed = await run(otherRevision)
+    assert.equal(renamed.code, 0, renamed.out.join("\n"))
+    assert.deepEqual(renamed.out, [`clean ${files.out}`])
+
+    // And the default revision, which is the palette's own commit: the path a
+    // consumer that pins nothing takes.
+    const withoutRevision: string[] = []
+    for (let index = 0; index < files.args.length; index += 1) {
+      if (files.args[index] === "--revision") {
+        index += 1
+        continue
+      }
+      withoutRevision.push(files.args[index] as string)
+    }
+    const defaulted = await run([...withoutRevision, "--check"])
+    assert.equal(defaulted.code, 0, defaulted.out.join("\n"))
+  })
+})
+
+test("a palette whose content moved is drift, under the revision it was rendered with", async () => {
+  await withTempDir(async (dir) => {
+    const palette = paletteCopy(dir)
+    const files = fixture(dir, palette, "content-template.ts")
+    await run(files.args)
+
+    const moved = JSON.parse(readFileSync(palette, "utf8")) as { groups: { accent: { primary: { hex: string } } } }
+    moved.groups.accent.primary.hex = "#112233"
+    writeFileSync(palette, `${JSON.stringify(moved, null, 2)}\n`)
+
+    const checked = await run([...files.args, "--check"])
+    assert.equal(checked.code, 1)
+    assert.match(checked.out.join("\n"), /record-stale .*: palette sha256: recorded [0-9a-f]{64}, now [0-9a-f]{64}/)
+    assert.ok(!checked.out.join("\n").includes("palette revision"), "the revision is provenance, not a comparison key")
+  })
+})
+
+test("a record that is not a record ends the run as a render that could not happen", async () => {
+  await withTempDir(async (dir) => {
+    const files = fixture(dir)
+    await run(files.args)
+    const outputBefore = readFileSync(files.out, "utf8")
+
+    const digest = "0".repeat(64)
+    const cases: [string, RegExp][] = [
+      [JSON.stringify({ version: 1 }), /template\.sha256 must be a sha256 digest/],
+      [JSON.stringify({ version: 2, template: { sha256: digest }, palette: { sha256: digest, revision: "r" }, output: { sha256: digest } }), /version must be 1/],
+      [JSON.stringify({ version: 1, template: { sha256: digest }, palette: { sha256: digest, revision: "r" }, output: { sha256: "short" } }), /output\.sha256 must be a sha256 digest/],
+      [JSON.stringify({ version: 1, template: { sha256: digest }, palette: { sha256: digest, revision: "" }, output: { sha256: digest } }), /palette\.revision must be a revision string/],
+      ["[]\n", /it is not an object/],
+    ]
+    for (const [content, expected] of cases) {
+      writeFileSync(files.record, content)
+      const checked = await run([...files.args, "--check"])
+      assert.equal(checked.code, 2, `${content.trim()}: ${checked.out.join(" | ")}`)
+      assert.match(checked.err.join("\n"), expected)
+      assert.ok(checked.err.join("\n").includes(`${files.record} is not a record`), checked.err.join("\n"))
+      assert.equal(readFileSync(files.out, "utf8"), outputBefore, "the failed gate touched the output")
+      assert.ok(!checked.out.join("\n").includes("undefined"), `a field the record does not hold was printed: ${checked.out.join(" | ")}`)
+    }
+  })
+})
+
+test("a missing palette is exit 2, named", async () => {
+  await withTempDir(async (dir) => {
+    const files = fixture(dir, join(dir, "nope", "palette.json"))
+    const result = await run([...files.args, "--check"])
+    assert.equal(result.code, 2)
+    assert.match(result.err.join("\n"), /palette .*nope.palette\.json could not be read/)
+  })
+})
+
 test("a check never writes, and a plain render repairs the drift", async () => {
   await withTempDir(async (dir) => {
     const files = fixture(dir)

@@ -124,7 +124,9 @@ export function buildPalette(raw: RawPalette): Palette {
       return token
     }
 
-    const token = frozen({ ...base, hex, alpha })
+    // A token that is already opaque is its own stand-in, so `solid` is present
+    // exactly when the token carries a colour.
+    const token = frozen(hex === undefined ? { ...base, alpha } : { ...base, hex, solid: hex })
     resolved.set(name, token)
     return token
   }
