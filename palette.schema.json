@@ -1,2423 +1,703 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "house-palette source",
-  "description": "Schema for palette.json, the single source of truth. Roles are named for the job they do. A role is either a solid hex string, or an object carrying an explicit alpha, an alias to another role, or an alpha-only value with no colour of its own.",
+  "title": "Palette source",
+  "description": "Schema for the palette source: ten groups of purpose-named tokens, each token carrying what it is for, plus the tuned opaque stand-ins. A token is a solid colour, a colour with its own opacity, an opacity alone, an alias to another token, or a value derived from one.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "version",
-    "roles",
-    "syntax",
-    "composites",
-    "ansi"
+    "groups",
+    "composites"
   ],
   "properties": {
     "version": {
-      "const": 1
+      "const": 2,
+      "description": "The shape of this file. A reader must see 2 here."
     },
-    "roles": {
+    "groups": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Every role the artifact publishes. Both branches of a role hold the same schema so a role cannot change shape silently.",
       "required": [
-        "panel-base",
-        "view-base",
-        "window-base",
-        "surface-raised",
-        "ink-on-accent",
-        "keyboard-panel-base",
-        "ink-emphasis",
-        "ink",
-        "ink-secondary",
-        "ink-muted",
-        "ink-faint",
-        "ink-faint-solid",
+        "surface",
+        "text",
         "accent",
-        "accent-soft",
-        "accent-cyan",
-        "accent-violet",
-        "error",
-        "warning",
-        "success",
-        "hairline",
-        "border-active",
-        "border-inactive",
-        "divider",
-        "border-strong",
-        "hover",
-        "hover-strong",
-        "wash",
-        "card-wash",
-        "selection-menu",
-        "selection-row",
-        "selection-note",
-        "accent-fill",
-        "focus-ring",
-        "danger-fill",
-        "row-highlight",
-        "row-active",
-        "scrollbar-thumb",
-        "scrollbar-thumb-hover",
-        "scrollbar-thumb-active",
-        "row-selected",
-        "text-shadow",
-        "glow-alpha",
-        "panel-alpha-shell",
-        "panel-alpha-card",
-        "panel-alpha-dock-disc",
-        "panel-alpha-dock-backdrop",
-        "panel-alpha-dock-menu",
-        "panel-alpha-notification",
-        "panel-alpha-notification-critical",
-        "panel-alpha-keyboard",
-        "terminal-opacity",
-        "scrim-opacity",
-        "scrim-base"
+        "state",
+        "border",
+        "interaction",
+        "opacity",
+        "effect",
+        "syntax",
+        "terminal"
       ],
       "properties": {
-        "panel-base": {
+        "surface": {
           "type": "object",
           "additionalProperties": false,
+          "description": "Backgrounds a surface is painted on: the base that translucent surfaces composite over, and the opaque tiers above it.",
           "required": [
-            "hex"
+            "base",
+            "view",
+            "window",
+            "raised",
+            "input"
           ],
           "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "base": {
+              "$ref": "#/$defs/opaqueToken"
             },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "view-base": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            }
-          }
-        },
-        "window-base": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            }
-          }
-        },
-        "surface-raised": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            }
-          }
-        },
-        "ink-on-accent": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            }
-          }
-        },
-        "keyboard-panel-base": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "view": {
+              "$ref": "#/$defs/opaqueToken"
             },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "ink-emphasis": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            }
-          }
-        },
-        "ink": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            }
-          }
-        },
-        "ink-secondary": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            }
-          }
-        },
-        "ink-muted": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            }
-          }
-        },
-        "ink-faint": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "window": {
+              "$ref": "#/$defs/opaqueToken"
             },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
+            "raised": {
+              "$ref": "#/$defs/opaqueToken"
             },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            "input": {
+              "$ref": "#/$defs/opaqueToken"
             }
           }
         },
-        "ink-faint-solid": {
+        "text": {
           "type": "object",
           "additionalProperties": false,
+          "description": "Text colours by emphasis tier, from the loudest heading to the quietest label, plus the colour carried inside a filled accent surface.",
           "required": [
-            "hex"
+            "strong",
+            "primary",
+            "secondary",
+            "muted",
+            "faint",
+            "faint-solid",
+            "on-accent"
           ],
           "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "strong": {
+              "$ref": "#/$defs/opaqueToken"
             },
-            "derive": {
-              "type": "string",
-              "description": "Formula the value must reproduce; a test recomputes it."
+            "primary": {
+              "$ref": "#/$defs/opaqueToken"
+            },
+            "secondary": {
+              "$ref": "#/$defs/opaqueToken"
+            },
+            "muted": {
+              "$ref": "#/$defs/opaqueToken"
+            },
+            "faint": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "faint-solid": {
+              "$ref": "#/$defs/derivedToken"
+            },
+            "on-accent": {
+              "$ref": "#/$defs/opaqueToken"
             }
           }
         },
         "accent": {
           "type": "object",
           "additionalProperties": false,
+          "description": "The accent family: one leading hue, a lighter step of it, and two further hues for the places where two accents must be told apart.",
           "required": [
-            "hex"
+            "primary",
+            "soft",
+            "secondary",
+            "tertiary"
           ],
           "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "primary": {
+              "$ref": "#/$defs/opaqueToken"
+            },
+            "soft": {
+              "$ref": "#/$defs/derivedToken"
+            },
+            "secondary": {
+              "$ref": "#/$defs/opaqueToken"
+            },
+            "tertiary": {
+              "$ref": "#/$defs/opaqueToken"
             }
           }
         },
-        "accent-soft": {
+        "state": {
           "type": "object",
           "additionalProperties": false,
+          "description": "The three conditions a value can report: failure, caution and success.",
           "required": [
-            "hex"
+            "error",
+            "warning",
+            "success"
           ],
           "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "error": {
+              "$ref": "#/$defs/opaqueToken"
             },
-            "derive": {
-              "type": "string",
-              "description": "Formula the value must reproduce; a test recomputes it."
+            "warning": {
+              "$ref": "#/$defs/opaqueToken"
+            },
+            "success": {
+              "$ref": "#/$defs/derivedToken"
             }
           }
         },
-        "accent-cyan": {
+        "border": {
           "type": "object",
           "additionalProperties": false,
+          "description": "Edges and separators, and the pair of window border colours that must be visible in each state.",
           "required": [
-            "hex"
+            "hairline",
+            "divider",
+            "strong",
+            "active",
+            "inactive"
           ],
           "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "hairline": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "divider": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "strong": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "active": {
+              "$ref": "#/$defs/opaqueToken"
+            },
+            "inactive": {
+              "$ref": "#/$defs/translucentToken"
             }
           }
         },
-        "accent-violet": {
+        "interaction": {
           "type": "object",
           "additionalProperties": false,
+          "description": "The fills a control takes as it is pointed at, pressed, selected or dragged, and the ring that marks keyboard focus.",
           "required": [
-            "hex"
+            "hover",
+            "hover-strong",
+            "wash",
+            "card-wash",
+            "row-highlight",
+            "row-active",
+            "row-selected",
+            "selection-menu",
+            "selection-row",
+            "selection-text",
+            "accent-fill",
+            "focus-ring",
+            "danger-fill",
+            "scrollbar-thumb",
+            "scrollbar-thumb-hover",
+            "scrollbar-thumb-active"
           ],
           "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "hover": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "hover-strong": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "wash": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "card-wash": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "row-highlight": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "row-active": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "row-selected": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "selection-menu": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "selection-row": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "selection-text": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "accent-fill": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "focus-ring": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "danger-fill": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "scrollbar-thumb": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "scrollbar-thumb-hover": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "scrollbar-thumb-active": {
+              "$ref": "#/$defs/translucentToken"
             }
           }
         },
-        "error": {
+        "opacity": {
           "type": "object",
           "additionalProperties": false,
+          "description": "How much shows through a surface. Each surface carries its own value: one opacity does not read the same through two surfaces.",
           "required": [
-            "hex"
+            "panel",
+            "card",
+            "backdrop",
+            "control-disc",
+            "menu",
+            "message",
+            "message-urgent",
+            "input-panel",
+            "terminal"
           ],
           "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "panel": {
+              "$ref": "#/$defs/opacityToken"
+            },
+            "card": {
+              "$ref": "#/$defs/opacityToken"
+            },
+            "backdrop": {
+              "$ref": "#/$defs/opacityToken"
+            },
+            "control-disc": {
+              "$ref": "#/$defs/opacityToken"
+            },
+            "menu": {
+              "$ref": "#/$defs/opacityToken"
+            },
+            "message": {
+              "$ref": "#/$defs/opacityToken"
+            },
+            "message-urgent": {
+              "$ref": "#/$defs/opacityToken"
+            },
+            "input-panel": {
+              "$ref": "#/$defs/opacityToken"
+            },
+            "terminal": {
+              "$ref": "#/$defs/opacityToken"
             }
           }
         },
-        "warning": {
+        "effect": {
           "type": "object",
           "additionalProperties": false,
+          "description": "The values a drawn effect is made of: a text shadow, a halo, and the wash laid over a backdrop for legibility.",
           "required": [
-            "hex"
+            "text-shadow",
+            "glow-alpha",
+            "scrim-base",
+            "scrim-opacity"
           ],
           "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "text-shadow": {
+              "$ref": "#/$defs/translucentToken"
+            },
+            "glow-alpha": {
+              "$ref": "#/$defs/opacityToken"
+            },
+            "scrim-base": {
+              "$ref": "#/$defs/opaqueToken"
+            },
+            "scrim-opacity": {
+              "$ref": "#/$defs/opacityToken"
             }
           }
         },
-        "success": {
+        "syntax": {
           "type": "object",
           "additionalProperties": false,
+          "description": "The colours of a code listing by syntactic role. Every one is an alias, so a syntax colour cannot drift from the token it names.",
           "required": [
-            "hex"
+            "comment",
+            "keyword",
+            "function",
+            "variable",
+            "string",
+            "number",
+            "type",
+            "operator",
+            "punctuation"
           ],
           "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "comment": {
+              "$ref": "#/$defs/aliasToken"
             },
-            "derive": {
-              "type": "string",
-              "description": "Formula the value must reproduce; a test recomputes it."
+            "keyword": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "function": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "variable": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "string": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "number": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "type": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "operator": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "punctuation": {
+              "$ref": "#/$defs/aliasToken"
             }
           }
         },
-        "hairline": {
+        "terminal": {
           "type": "object",
           "additionalProperties": false,
+          "description": "The conventional sixteen colour slots of a text console: eight base slots, their bright steps, and the default background and foreground.",
           "required": [
-            "hex",
-            "frozen"
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
           ],
           "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
+            "0": {
+              "$ref": "#/$defs/aliasToken"
             },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
+            "1": {
+              "$ref": "#/$defs/aliasToken"
             },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            "2": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "3": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "4": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "5": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "6": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "7": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "8": {
+              "$ref": "#/$defs/aliasToken"
+            },
+            "9": {
+              "$ref": "#/$defs/derivedToken"
+            },
+            "10": {
+              "$ref": "#/$defs/derivedToken"
+            },
+            "11": {
+              "$ref": "#/$defs/derivedToken"
+            },
+            "12": {
+              "$ref": "#/$defs/derivedToken"
+            },
+            "13": {
+              "$ref": "#/$defs/derivedToken"
+            },
+            "14": {
+              "$ref": "#/$defs/derivedToken"
+            },
+            "15": {
+              "$ref": "#/$defs/aliasToken"
             }
           }
-        },
-        "border-active": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "border-inactive": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "divider": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alias"
-          ],
-          "properties": {
-            "alias": {
-              "type": "string",
-              "description": "Role this one spells: same value, one decision."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "border-strong": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "hover": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "hover-strong": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "wash": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "card-wash": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "selection-menu": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "selection-row": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "selection-note": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "accent-fill": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "focus-ring": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "danger-fill": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "row-highlight": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "row-active": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "scrollbar-thumb": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "scrollbar-thumb-hover": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "scrollbar-thumb-active": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "row-selected": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            }
-          }
-        },
-        "text-shadow": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "glow-alpha": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alpha",
-            "frozen"
-          ],
-          "properties": {
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "panel-alpha-shell": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alpha",
-            "frozen"
-          ],
-          "properties": {
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "panel-alpha-card": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alpha",
-            "frozen"
-          ],
-          "properties": {
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "panel-alpha-dock-disc": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alpha",
-            "frozen"
-          ],
-          "properties": {
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "panel-alpha-dock-backdrop": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alpha",
-            "frozen"
-          ],
-          "properties": {
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "panel-alpha-dock-menu": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alpha",
-            "frozen"
-          ],
-          "properties": {
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "panel-alpha-notification": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alpha",
-            "frozen"
-          ],
-          "properties": {
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "panel-alpha-notification-critical": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alpha",
-            "frozen"
-          ],
-          "properties": {
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "panel-alpha-keyboard": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alpha",
-            "frozen"
-          ],
-          "properties": {
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "terminal-opacity": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alpha",
-            "frozen"
-          ],
-          "properties": {
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "scrim-opacity": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "alpha",
-            "frozen"
-          ],
-          "properties": {
-            "alpha": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Alpha carried by the role."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        },
-        "scrim-base": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "hex",
-            "frozen"
-          ],
-          "properties": {
-            "hex": {
-              "type": "string",
-              "pattern": "^#[0-9a-f]{6}$",
-              "description": "Lower-case six-digit RGB."
-            },
-            "frozen": {
-              "const": true,
-              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
-            },
-            "note": {
-              "type": "string",
-              "description": "What the role is for, in one line."
-            }
-          }
-        }
-      }
-    },
-    "syntax": {
-      "type": "object",
-      "additionalProperties": false,
-      "description": "Consumer syntax role to house role bindings. The value is a role name, never a colour, so a syntax role cannot drift from its house role.",
-      "required": [
-        "syntaxComment",
-        "syntaxKeyword",
-        "syntaxFunction",
-        "syntaxVariable",
-        "syntaxString",
-        "syntaxNumber",
-        "syntaxType",
-        "syntaxOperator",
-        "syntaxPunctuation"
-      ],
-      "properties": {
-        "syntaxComment": {
-          "type": "string",
-          "description": "House role this syntax role derives from."
-        },
-        "syntaxKeyword": {
-          "type": "string",
-          "description": "House role this syntax role derives from."
-        },
-        "syntaxFunction": {
-          "type": "string",
-          "description": "House role this syntax role derives from."
-        },
-        "syntaxVariable": {
-          "type": "string",
-          "description": "House role this syntax role derives from."
-        },
-        "syntaxString": {
-          "type": "string",
-          "description": "House role this syntax role derives from."
-        },
-        "syntaxNumber": {
-          "type": "string",
-          "description": "House role this syntax role derives from."
-        },
-        "syntaxType": {
-          "type": "string",
-          "description": "House role this syntax role derives from."
-        },
-        "syntaxOperator": {
-          "type": "string",
-          "description": "House role this syntax role derives from."
-        },
-        "syntaxPunctuation": {
-          "type": "string",
-          "description": "House role this syntax role derives from."
         }
       }
     },
     "composites": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Values that exist only because a consumer syntax cannot carry alpha: the role composited over panel-base. A test recomputes each one and allows one step per channel of rounding slack.",
+      "description": "The opaque stand-in for each translucent token, for a carrier that cannot express opacity. A test recomputes each one from the token and allows one step of rounding per channel.",
       "required": [
-        "hairline",
-        "hover",
-        "wash",
-        "border-strong",
-        "hover-strong",
-        "card-wash",
-        "accent-fill",
-        "selection-menu",
-        "selection-row",
-        "selection-note",
-        "focus-ring",
-        "danger-fill",
-        "text-shadow",
-        "ink-faint"
+        "border.hairline",
+        "border.strong",
+        "effect.text-shadow",
+        "interaction.accent-fill",
+        "interaction.card-wash",
+        "interaction.danger-fill",
+        "interaction.focus-ring",
+        "interaction.hover",
+        "interaction.hover-strong",
+        "interaction.selection-menu",
+        "interaction.selection-row",
+        "interaction.selection-text",
+        "interaction.wash",
+        "text.faint"
       ],
       "properties": {
-        "hairline": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "border.hairline": {
+          "$ref": "#/$defs/hex"
         },
-        "hover": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "border.strong": {
+          "$ref": "#/$defs/hex"
         },
-        "wash": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "effect.text-shadow": {
+          "$ref": "#/$defs/hex"
         },
-        "border-strong": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "interaction.accent-fill": {
+          "$ref": "#/$defs/hex"
         },
-        "hover-strong": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "interaction.card-wash": {
+          "$ref": "#/$defs/hex"
         },
-        "card-wash": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "interaction.danger-fill": {
+          "$ref": "#/$defs/hex"
         },
-        "accent-fill": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "interaction.focus-ring": {
+          "$ref": "#/$defs/hex"
         },
-        "selection-menu": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "interaction.hover": {
+          "$ref": "#/$defs/hex"
         },
-        "selection-row": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "interaction.hover-strong": {
+          "$ref": "#/$defs/hex"
         },
-        "selection-note": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "interaction.selection-menu": {
+          "$ref": "#/$defs/hex"
         },
-        "focus-ring": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "interaction.selection-row": {
+          "$ref": "#/$defs/hex"
         },
-        "danger-fill": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "interaction.selection-text": {
+          "$ref": "#/$defs/hex"
         },
-        "text-shadow": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "interaction.wash": {
+          "$ref": "#/$defs/hex"
         },
-        "ink-faint": {
-          "type": "string",
-          "pattern": "^#[0-9a-f]{6}$"
+        "text.faint": {
+          "$ref": "#/$defs/hex"
         }
       }
+    }
+  },
+  "$defs": {
+    "purpose": {
+      "type": "string",
+      "minLength": 20,
+      "description": "One sentence stating what the value is for. Not its colour, its consumer or its file."
     },
-    "ansi": {
+    "hex": {
+      "type": "string",
+      "pattern": "^#[0-9a-f]{6}$",
+      "description": "A lower-case six-digit RGB colour."
+    },
+    "alpha": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Opacity from 0 to 1 inclusive. A value of 1 belongs in a solid hex instead."
+    },
+    "frozen": {
+      "type": "boolean",
+      "description": "Marks a value tuned by eye: carried unchanged, never derived, averaged or normalised."
+    },
+    "tokenName": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(\\.[a-z0-9-]+)+$",
+      "description": "The name of another token, written group.key."
+    },
+    "derive": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "from",
+            "amount"
+          ],
+          "properties": {
+            "op": {
+              "const": "blend-toward-white"
+            },
+            "from": {
+              "$ref": "#/$defs/tokenName"
+            },
+            "amount": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "from",
+            "degrees"
+          ],
+          "properties": {
+            "op": {
+              "const": "rotate-hue"
+            },
+            "from": {
+              "$ref": "#/$defs/tokenName"
+            },
+            "degrees": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 360
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "op",
+            "from",
+            "over"
+          ],
+          "properties": {
+            "op": {
+              "const": "composite"
+            },
+            "from": {
+              "$ref": "#/$defs/tokenName"
+            },
+            "over": {
+              "$ref": "#/$defs/tokenName"
+            }
+          }
+        }
+      ],
+      "description": "A formula, recomputed by a test. A derived token carries no hex of its own."
+    },
+    "opaqueToken": {
       "type": "object",
       "additionalProperties": false,
-      "description": "The sixteen terminal slots: a house role name, or bright:<role> for the same role moved 25 percent toward white.",
       "required": [
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10",
-        "11",
-        "12",
-        "13",
-        "14",
-        "15"
+        "hex",
+        "purpose"
       ],
       "properties": {
-        "0": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
+        "hex": {
+          "$ref": "#/$defs/hex"
         },
-        "1": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
+        "purpose": {
+          "$ref": "#/$defs/purpose"
         },
-        "2": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "3": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "4": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "5": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "6": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "7": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "8": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "9": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "10": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "11": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "12": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "13": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "14": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
-        },
-        "15": {
-          "anyOf": [
-            {
-              "enum": [
-                "panel-base",
-                "view-base",
-                "window-base",
-                "surface-raised",
-                "ink-on-accent",
-                "keyboard-panel-base",
-                "ink-emphasis",
-                "ink",
-                "ink-secondary",
-                "ink-muted",
-                "ink-faint",
-                "ink-faint-solid",
-                "accent",
-                "accent-soft",
-                "accent-cyan",
-                "accent-violet",
-                "error",
-                "warning",
-                "success",
-                "hairline",
-                "border-active",
-                "border-inactive",
-                "divider",
-                "border-strong",
-                "hover",
-                "hover-strong",
-                "wash",
-                "card-wash",
-                "selection-menu",
-                "selection-row",
-                "selection-note",
-                "accent-fill",
-                "focus-ring",
-                "danger-fill",
-                "row-highlight",
-                "row-active",
-                "scrollbar-thumb",
-                "scrollbar-thumb-hover",
-                "scrollbar-thumb-active",
-                "row-selected",
-                "text-shadow",
-                "glow-alpha",
-                "panel-alpha-shell",
-                "panel-alpha-card",
-                "panel-alpha-dock-disc",
-                "panel-alpha-dock-backdrop",
-                "panel-alpha-dock-menu",
-                "panel-alpha-notification",
-                "panel-alpha-notification-critical",
-                "panel-alpha-keyboard",
-                "terminal-opacity",
-                "scrim-opacity",
-                "scrim-base"
-              ]
-            },
-            {
-              "type": "string",
-              "pattern": "^bright:[a-z0-9-]+$"
-            }
-          ]
+        "frozen": {
+          "$ref": "#/$defs/frozen"
         }
-      }
+      },
+      "description": "A solid colour."
+    },
+    "translucentToken": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hex",
+        "alpha",
+        "purpose"
+      ],
+      "properties": {
+        "hex": {
+          "$ref": "#/$defs/hex"
+        },
+        "alpha": {
+          "$ref": "#/$defs/alpha"
+        },
+        "purpose": {
+          "$ref": "#/$defs/purpose"
+        },
+        "frozen": {
+          "$ref": "#/$defs/frozen"
+        }
+      },
+      "description": "A colour carried with its own opacity."
+    },
+    "opacityToken": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alpha",
+        "purpose"
+      ],
+      "properties": {
+        "alpha": {
+          "$ref": "#/$defs/alpha"
+        },
+        "purpose": {
+          "$ref": "#/$defs/purpose"
+        },
+        "frozen": {
+          "$ref": "#/$defs/frozen"
+        }
+      },
+      "description": "An opacity with no colour of its own."
+    },
+    "aliasToken": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alias",
+        "purpose"
+      ],
+      "properties": {
+        "alias": {
+          "$ref": "#/$defs/tokenName"
+        },
+        "purpose": {
+          "$ref": "#/$defs/purpose"
+        },
+        "frozen": {
+          "$ref": "#/$defs/frozen"
+        }
+      },
+      "description": "The same decision as another token."
+    },
+    "derivedToken": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "derive",
+        "purpose"
+      ],
+      "properties": {
+        "derive": {
+          "$ref": "#/$defs/derive"
+        },
+        "purpose": {
+          "$ref": "#/$defs/purpose"
+        },
+        "frozen": {
+          "$ref": "#/$defs/frozen"
+        }
+      },
+      "description": "A value computed from another token."
     }
   }
 }

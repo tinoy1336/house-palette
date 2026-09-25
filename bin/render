@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// bin/render — the entry point hooks and the shell's audit call.
+// bin/render — the command a rendering step calls. See docs/template-contract.md.
 import { main } from "../src/cli.ts"
 
-process.exit(main(process.argv.slice(2)))
+process.exit(await main(process.argv.slice(2)))

@@ -1,10 +1,14 @@
 /**
- * colour.ts — colour arithmetic for the renderer.
+ * colour.ts — colour arithmetic, and nothing else.
  *
- * Every derivation the artifact promises is computed here and asserted against
- * the value the source records, so a wrong number is caught by a test rather
- * than discovered in a stylesheet. Rounding is `Math.round` per channel, which
- * is the rule the derived values in the source were produced with.
+ * The renderer hands these functions to a template. They deal in colour models
+ * — hex, RGB channels, HSL — and never in an output syntax: a template that
+ * needs `rgba(r, g, b, a)`, a hex string with an alpha byte fused onto it, or a
+ * bare `r, g, b` triple builds that text itself from `parse`, so no format
+ * knowledge reaches this repository.
+ *
+ * Rounding is `Math.round` per channel, which is the rule the palette's derived
+ * values were produced with.
  */
 
 export type Rgb = { r: number; g: number; b: number }
@@ -12,9 +16,13 @@ export type Hsl = { h: number; s: number; l: number }
 
 const HEX_PATTERN = /^#[0-9a-f]{6}$/
 
-/** Parses `#rrggbb` and rejects anything else, including eight-digit alpha hex: the source carries alpha as a number, never fused into the hex. */
+export function isHex(text: string): boolean {
+  return HEX_PATTERN.test(text)
+}
+
+/** Parses `#rrggbb`. Anything else — upper case, three digits, a fused alpha byte — is an error, because the palette records opacity as a number. */
 export function parseHex(hex: string): Rgb {
-  if (!HEX_PATTERN.test(hex)) throw new Error(`not a lower-case six-digit hex colour: ${hex}`)
+  if (!isHex(hex)) throw new Error(`not a lower-case six-digit hex colour: ${hex}`)
   return {
     r: Number.parseInt(hex.slice(1, 3), 16),
     g: Number.parseInt(hex.slice(3, 5), 16),
@@ -27,13 +35,13 @@ export function toHex({ r, g, b }: Rgb): string {
   return `#${channel(r)}${channel(g)}${channel(b)}`
 }
 
-/** `hex` moved `t` of the way to white, hue and saturation untouched. */
-export function blendTowardWhite(hex: string, t: number): string {
+/** `hex` moved `amount` of the way to white, hue and saturation untouched. */
+export function blendTowardWhite(hex: string, amount: number): string {
   const { r, g, b } = parseHex(hex)
-  return toHex({ r: r + t * (255 - r), g: g + t * (255 - g), b: b + t * (255 - b) })
+  return toHex({ r: r + amount * (255 - r), g: g + amount * (255 - g), b: b + amount * (255 - b) })
 }
 
-/** `hex` at `alpha` painted over `baseHex`: the opaque value that reads the same on that base. */
+/** `hex` at `alpha` painted over `baseHex`: the opaque colour that reads the same on that base. */
 export function compositeOver(hex: string, alpha: number, baseHex: string): string {
   const top = parseHex(hex)
   const base = parseHex(baseHex)
@@ -41,27 +49,7 @@ export function compositeOver(hex: string, alpha: number, baseHex: string): stri
   return toHex({ r: mix(top.r, base.r), g: mix(top.g, base.g), b: mix(top.b, base.b) })
 }
 
-/** CSS colour: the hex when the role is solid, `rgba(r, g, b, a)` when it carries alpha. */
-export function toCss(hex: string, alpha?: number): string {
-  if (alpha === undefined) return hex
-  const { r, g, b } = parseHex(hex)
-  return `rgba(${r}, ${g}, ${b}, ${formatAlpha(alpha)})`
-}
-
-/** KDE INI and Qt INI take an `R,G,B` triple with no alpha. */
-export function toRgbTriple(hex: string): string {
-  const { r, g, b } = parseHex(hex)
-  return `${r}, ${g}, ${b}`
-}
-
-/** Hyprland's `rgba(rrggbbaa)`: the alpha a two-digit hex fraction of 255. */
-export function toHypr(hex: string, alpha = 1): string {
-  const { r, g, b } = parseHex(hex)
-  const channel = (value: number) => Math.round(value).toString(16).padStart(2, "0")
-  return `rgba(${channel(r)}${channel(g)}${channel(b)}${channel(alpha * 255)})`
-}
-
-/** Alpha as written in a stylesheet: `0.5`, never `0.50` or `5e-1`. */
+/** Alpha as the palette records it: `0.5`, never `0.50` or `5e-1`. */
 export function formatAlpha(alpha: number): string {
   return String(alpha)
 }
@@ -101,13 +89,13 @@ export function fromHsl({ h, s, l }: Hsl): string {
   return toHex({ r: (r + m) * 255, g: (g + m) * 255, b: (b + m) * 255 })
 }
 
-/** Same saturation and lightness as `hex`, hue replaced. Keeps a derived colour inside its family. */
-export function rotateHue(hex: string, hue: number): string {
+/** The same saturation and lightness as `hex`, with the hue replaced: keeps a derived colour inside its family. */
+export function rotateHue(hex: string, degrees: number): string {
   const { s, l } = toHsl(hex)
-  return fromHsl({ h: hue, s, l })
+  return fromHsl({ h: degrees, s, l })
 }
 
-/** WCAG relative-luminance contrast ratio, used by the contrast assertion. */
+/** WCAG relative-luminance contrast ratio, for the contrast a reader can check. */
 export function contrastRatio(a: string, b: string): number {
   const luminance = (hex: string) => {
     const { r, g, b: blue } = parseHex(hex)

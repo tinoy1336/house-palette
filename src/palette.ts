@@ -1,184 +1,160 @@
 /**
- * palette.ts — reads the source and turns it into the flat token table the
- * templates address by name.
+ * palette.ts — loads the palette source, proves it satisfies its schema, and
+ * resolves it into the frozen token table a template receives.
  *
- * Two rules decide the shape of that table:
+ * Three rules decide the shape of that table:
  *
- *   - A token is derived from a role, never spelled twice. A template asks for
- *     `accent` or `hairline.css`, never for a hex.
- *   - A role that is not there is an error, not an empty string: an unresolved
- *     placeholder fails the render, so a stale template cannot ship a blank
- *     colour.
+ *   - A token carries the value it resolves to, never a formula a template
+ *     would have to evaluate: a template reads `token.hex`, `token.alpha` and
+ *     `token.solid` and formats them itself.
+ *   - An unresolved name is an error, not an empty value: a template that asks
+ *     for a token the palette does not hold fails the render.
+ *   - A template cannot change the palette: the table and every token in it are
+ *     frozen.
  */
 
 import { readFileSync } from "node:fs"
-import { blendTowardWhite, compositeOver, formatAlpha, parseHex, toCss, toHypr, toRgbTriple } from "./colour.ts"
+import { dirname, join } from "node:path"
+import { blendTowardWhite, compositeOver, rotateHue } from "./colour.ts"
+import { formatErrors, validate } from "./schema.ts"
 
-export type RoleObject = {
+export type Token = {
+  /** The full name, `group.key`; the same string is the key in the token table. */
+  name: string
+  group: string
+  /** One sentence stating what the value is for. */
+  purpose: string
   hex?: string
   alpha?: number
-  frozen?: boolean
-  note?: string
-  derive?: string
+  /** The opaque stand-in: what this token reads as on `surface.base`, for a carrier that cannot express opacity. Absent for a token with no colour. */
+  solid?: string
+  /** The token this one is an alias of, when it holds no value of its own. */
   alias?: string
+  frozen: boolean
 }
-export type RoleValue = string | RoleObject
 
 export type Palette = {
   version: number
-  roles: Record<string, RoleValue>
-  syntax: Record<string, string>
+  /** Every token by full name, in source order. */
+  tokens: Readonly<Record<string, Token>>
+  /** The token named `name`; throws when the palette holds no such token. */
+  find(name: string): Token
+}
+
+type RawToken = {
+  hex?: string
+  alpha?: number
+  alias?: string
+  derive?: { op: string; from: string; amount?: number; degrees?: number; over?: string }
+  purpose: string
+  frozen?: boolean
+}
+
+type RawPalette = {
+  version: number
+  groups: Record<string, Record<string, RawToken>>
   composites: Record<string, string>
-  ansi: Record<string, string>
 }
 
-/** Panel-base at one surface's own alpha. The surface list is the whole reason the alphas are roles. */
-const GLASS_SURFACES: Record<string, { base: string; alpha: string }> = {
-  shell: { base: "panel-base", alpha: "panel-alpha-shell" },
-  card: { base: "panel-base", alpha: "panel-alpha-card" },
-  "dock-disc": { base: "panel-base", alpha: "panel-alpha-dock-disc" },
-  "dock-backdrop": { base: "panel-base", alpha: "panel-alpha-dock-backdrop" },
-  "dock-menu": { base: "panel-base", alpha: "panel-alpha-dock-menu" },
-  notification: { base: "panel-base", alpha: "panel-alpha-notification" },
-  "notification-critical": { base: "panel-base", alpha: "panel-alpha-notification-critical" },
-  keyboard: { base: "keyboard-panel-base", alpha: "panel-alpha-keyboard" },
+/** Names every token in source order, with the group it sits in. */
+function flatten(raw: RawPalette): { name: string; group: string; token: RawToken }[] {
+  return Object.entries(raw.groups).flatMap(([group, tokens]) =>
+    Object.entries(tokens).map(([key, token]) => ({ name: `${group}.${key}`, group, token })),
+  )
 }
 
-export function loadPalette(path: string): Palette {
-  const parsed: unknown = JSON.parse(readFileSync(path, "utf8"))
-  if (typeof parsed !== "object" || parsed === null) throw new Error(`${path}: not an object`)
-  const palette = parsed as Palette
-  if (palette.version !== 1) throw new Error(`${path}: unsupported version ${String(palette.version)}`)
-  for (const [name, value] of Object.entries(palette.roles)) assertRole(path, name, value)
-  return palette
+export function loadPalette(palettePath: string): Palette {
+  const raw = JSON.parse(readFileSync(palettePath, "utf8")) as RawPalette
+  const schemaPath = join(dirname(palettePath), "palette.schema.json")
+  const errors = validate(JSON.parse(readFileSync(schemaPath, "utf8")), raw)
+  if (errors.length > 0) throw new Error(`${palettePath} does not satisfy ${schemaPath}:\n${formatErrors(errors)}`)
+  return buildPalette(raw)
 }
 
-function assertRole(path: string, name: string, value: RoleValue): void {
-  if (typeof value === "string") {
-    parseHex(value)
-    return
+export function buildPalette(raw: RawPalette): Palette {
+  const entries = flatten(raw)
+  const byName = new Map(entries.map((entry) => [entry.name, entry]))
+  const resolved = new Map<string, Token>()
+
+  /** The opaque colour every translucent token is composited over. A translucent base would make that arithmetic meaningless. */
+  const surfaceBase = (): Token => {
+    const entry = byName.get("surface.base")
+    if (entry === undefined) throw new Error("the palette holds no surface.base: it is the base every translucent token composites over")
+    if (entry.token.hex === undefined || entry.token.alpha !== undefined) throw new Error("surface.base must be an opaque colour: it is the base every translucent token composites over")
+    return record("surface.base", [])
   }
-  if (typeof value !== "object" || value === null) throw new Error(`${path}: role ${name} is neither a hex string nor an object`)
-  if (value.alias !== undefined) {
-    if (Object.keys(value).some((key) => key !== "alias" && key !== "note")) throw new Error(`${path}: role ${name} carries an alias with extra value fields`)
-    return
-  }
-  if (value.hex !== undefined) parseHex(value.hex)
-  if (value.hex === undefined && value.alpha === undefined) throw new Error(`${path}: role ${name} has neither a hex nor an alpha`)
-  if (value.alpha !== undefined && (value.alpha < 0 || value.alpha > 1)) throw new Error(`${path}: role ${name} alpha ${value.alpha} outside 0–1`)
-  if (value.hex !== undefined && value.alpha !== undefined && value.alpha === 1) throw new Error(`${path}: role ${name} carries alpha 1; make it a solid hex instead`)
-}
 
-/** Follows an alias chain to the role that actually holds the value. */
-export function resolveRole(palette: Palette, name: string): string {
-  const seen = new Set<string>()
-  let current = name
-  while (true) {
-    if (seen.has(current)) throw new Error(`alias cycle at role ${current}`)
-    seen.add(current)
-    const value = palette.roles[current]
-    if (value === undefined) throw new Error(`no such role: ${current}`)
-    if (typeof value === "object" && value.alias !== undefined) {
-      current = value.alias
-      continue
+  const record = (name: string, seen: string[]): Token => {
+    const cached = resolved.get(name)
+    if (cached !== undefined) return cached
+    if (seen.includes(name)) throw new Error(`alias cycle: ${[...seen, name].join(" -> ")}`)
+    const entry = byName.get(name)
+    if (entry === undefined) throw new Error(`no such token: ${name}`)
+    const base = { name, group: entry.group, purpose: entry.token.purpose, frozen: entry.token.frozen === true }
+    const { hex, alpha, alias, derive } = entry.token
+
+    if (alias !== undefined) {
+      const target = record(alias, [...seen, name])
+      // An alias of a tuned value is tuned as well: it carries the same decision.
+      const token = frozen({ ...base, alias, hex: target.hex, alpha: target.alpha, solid: target.solid, frozen: base.frozen || target.frozen })
+      resolved.set(name, token)
+      return token
     }
-    return current
-  }
-}
 
-export function roleRecord(palette: Palette, name: string): RoleObject {
-  const resolved = resolveRole(palette, name)
-  const value = palette.roles[resolved]
-  if (typeof value === "string") return { hex: value }
-  return value
-}
-
-export function roleHex(palette: Palette, name: string): string {
-  const role = roleRecord(palette, name)
-  if (role.hex === undefined) throw new Error(`role ${name} carries no colour`)
-  return role.hex
-}
-
-export function roleAlpha(palette: Palette, name: string): number | undefined {
-  return roleRecord(palette, name).alpha
-}
-
-/**
- * The opaque stand-in for an alpha-carrying role: the value the source declares
- * in `composites` when it has one (those were tuned by eye against this base),
- * otherwise the role composited over panel-base with the same rounding rule as
- * every other derivation.
- */
-export function solidValue(palette: Palette, name: string): string {
-  const resolved = resolveRole(palette, name)
-  const declared = palette.composites[resolved]
-  if (declared !== undefined) return declared
-  const role = roleRecord(palette, resolved)
-  if (role.hex === undefined) throw new Error(`role ${resolved} carries no colour`)
-  if (role.alpha === undefined) return role.hex
-  return compositeOver(role.hex, role.alpha, roleHex(palette, "panel-base"))
-}
-
-/**
- * Every token a template may address, flattened to strings.
- *
- * Per role: the bare name, `.hex`, `.alpha`, `.rgb`, `.css`, `.hypr` and
- * `.solid`. An alias publishes the aliased role's whole token set under its own
- * name, so `divider.css` and `hairline.css` cannot disagree.
- */
-export function tokenMap(palette: Palette): Map<string, string> {
-  const tokens = new Map<string, string>()
-
-  const publish = (name: string, resolved: string) => {
-    const role = roleRecord(palette, resolved)
-    const hex = role.hex
-    const alpha = role.alpha
-    if (alpha !== undefined) tokens.set(`${name}.alpha`, formatAlpha(alpha))
-    if (hex === undefined) {
-      // An alpha-only role (a halo's strength, say) publishes its number as the
-      // bare token and nothing else.
-      if (alpha !== undefined) tokens.set(name, formatAlpha(alpha))
-      return
+    if (derive !== undefined) {
+      const target = record(derive.from, [...seen, name])
+      let value: string
+      if (derive.op === "blend-toward-white") value = blendTowardWhite(requireHex(target, derive.op), derive.amount as number)
+      else if (derive.op === "rotate-hue") value = rotateHue(requireHex(target, derive.op), derive.degrees as number)
+      else if (derive.op === "composite") {
+        const baseToken = record(derive.over as string, [...seen, name])
+        if (target.alpha === undefined) throw new Error(`${name}: composite derives from ${derive.from}, which carries no alpha`)
+        if (baseToken.alpha !== undefined) throw new Error(`${name}: composite derives over ${baseToken.name}, which carries its own opacity`)
+        value = compositeOver(requireHex(target, derive.op), target.alpha, requireHex(baseToken, derive.op))
+      } else throw new Error(`${name}: unknown derive op ${derive.op}`)
+      const token = frozen({ ...base, hex: value, solid: value })
+      resolved.set(name, token)
+      return token
     }
-    tokens.set(name, hex)
-    tokens.set(`${name}.hex`, hex)
-    tokens.set(`${name}.rgb`, toRgbTriple(hex))
-    tokens.set(`${name}.css`, toCss(hex, alpha))
-    tokens.set(`${name}.hypr`, toHypr(hex, alpha))
-    tokens.set(`${name}.solid`, solidValue(palette, resolved))
-    tokens.set(`${name}.solid.rgb`, toRgbTriple(solidValue(palette, resolved)))
+
+    if (hex !== undefined && alpha !== undefined) {
+      const declared = raw.composites[name]
+      const token = frozen({ ...base, hex, alpha, solid: declared ?? compositeOver(hex, alpha, requireHex(surfaceBase(), "composite")) })
+      resolved.set(name, token)
+      return token
+    }
+
+    const token = frozen({ ...base, hex, alpha })
+    resolved.set(name, token)
+    return token
   }
 
-  for (const name of Object.keys(palette.roles)) publish(name, resolveRole(palette, name))
+  const tokens: Record<string, Token> = {}
+  for (const entry of entries) tokens[entry.name] = record(entry.name, [])
 
-  for (const [surface, { base, alpha }] of Object.entries(GLASS_SURFACES)) {
-    const glass = toCss(roleHex(palette, base), roleAlpha(palette, alpha))
-    tokens.set(`glass.${surface}.css`, glass)
-    tokens.set(`glass.${surface}.solid`, solidValue(palette, base))
+  for (const name of Object.keys(raw.composites)) {
+    const token = tokens[name]
+    if (token === undefined) throw new Error(`composite names a token the palette does not hold: ${name}`)
+    if (token.hex === undefined || token.alpha === undefined) throw new Error(`composite names a token that carries no opacity: ${name}`)
   }
 
-  for (const [slot, binding] of Object.entries(palette.ansi)) {
-    const bright = binding.startsWith("bright:")
-    const name = bright ? binding.slice("bright:".length) : binding
-    const { hex } = roleRecord(palette, name)
-    if (hex === undefined) throw new Error(`ansi slot ${slot} points at a role with no colour: ${name}`)
-    // A bright slot is the same role 25 percent closer to white: the terminal
-    // palette has no second step for these hues, and a borrowed one would leave
-    // the family.
-    tokens.set(`ansi.${slot}`, bright ? blendTowardWhite(hex, 0.25) : hex)
-  }
-
-  for (const [name, composite] of Object.entries(palette.composites)) tokens.set(`composite.${name}`, composite)
-
-  return tokens
+  const table = Object.freeze(tokens)
+  return Object.freeze({
+    version: raw.version,
+    tokens: table,
+    find(name: string): Token {
+      const token = table[name]
+      if (token === undefined) throw new Error(`no such token: ${name}`)
+      return token
+    },
+  })
 }
 
-/** Frozen roles as written for the manifest: the value a consumer may read back, unchanged. */
-export function frozenValues(palette: Palette): Record<string, string> {
-  const frozen: Record<string, string> = {}
-  for (const [name, value] of Object.entries(palette.roles)) {
-    if (typeof value === "string" || value.frozen !== true) continue
-    frozen[name] = value.hex === undefined ? formatAlpha(value.alpha ?? 0) : toCss(value.hex, value.alpha)
-  }
-  return Object.fromEntries(Object.entries(frozen).sort(([a], [b]) => (a < b ? -1 : 1)))
+function requireHex(token: Token, op: string): string {
+  if (token.hex === undefined) throw new Error(`${op} needs a colour, but ${token.name} carries none`)
+  return token.hex
+}
+
+function frozen<T extends object>(value: T): Readonly<T> {
+  return Object.freeze(value)
 }
