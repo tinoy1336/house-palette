@@ -1,0 +1,39 @@
+/* Palette tokens for the shell tree, declared on `*` so every widget carries
+   the value itself: GTK custom properties are inherited like any other
+   inherited property, so a narrower selector would only reach one subtree.
+ *
+ * Palette values only. Geometry (radii, gaps, row padding), the font stack and
+ * the component rules that consume these tokens live in the shell's own
+ * stylesheet, not here. Each token is named for the role the value plays, never
+ * for the hex: two apps can read one role, and two sites can carry an equal
+ * value that is two different decisions. */
+
+* {
+  /* Ink. */
+  --tinshell-ink: {{ink}};
+  --tinshell-ink-emphasis: {{ink-emphasis}};
+  --tinshell-ink-secondary: {{ink-secondary}};
+  --tinshell-ink-muted: {{ink-muted}};
+  --tinshell-ink-faint: {{ink-faint.css}};
+  --tinshell-accent: {{accent}};
+  --tinshell-accent-soft: {{accent-soft}};
+
+  /* Surfaces: the frosted panel base, the washes painted inside it, the
+   * hairline that separates blocks on it, and the selected row. */
+  --tinshell-panel: {{glass.shell.css}};
+  --tinshell-wash: {{wash.css}};
+  --tinshell-row-selected: {{row-selected.css}};
+  --tinshell-hairline: {{hairline.css}};
+  --tinshell-hover: {{hover.css}};
+  --tinshell-hover-strong: {{hover-strong.css}};
+
+  /* State. */
+  --tinshell-error: {{error}};
+  --tinshell-warning: {{warning}};
+  --tinshell-success: {{success}};
+
+  /* Scrollbar: one pill, three states, each its own tuned alpha. */
+  --tinshell-scrollbar-thumb: {{scrollbar-thumb.css}};
+  --tinshell-scrollbar-thumb-hover: {{scrollbar-thumb-hover.css}};
+  --tinshell-scrollbar-thumb-active: {{scrollbar-thumb-active.css}};
+}

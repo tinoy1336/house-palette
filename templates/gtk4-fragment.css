@@ -1,0 +1,44 @@
+/* Palette values for GTK4 and libadwaita apps. Imported by gtk-4.0/gtk.css
+   ahead of the rules that use these names. The libadwaita names are the
+   sanctioned seam and keep their upstream spelling; libadwaita defines no
+   success colour, so the state colours it has no key for carry an ags_ prefix. */
+
+@define-color window_bg_color {{window-base}};
+@define-color window_fg_color {{ink}};
+@define-color view_bg_color {{view-base}};
+@define-color view_fg_color {{ink}};
+@define-color headerbar_bg_color {{window-base}};
+@define-color headerbar_fg_color {{ink}};
+@define-color headerbar_border_color {{hover.css}};
+@define-color headerbar_backdrop_color @window_bg_color;
+@define-color popover_bg_color {{surface-raised}};
+@define-color popover_fg_color {{ink}};
+@define-color dialog_bg_color {{window-base}};
+@define-color dialog_fg_color {{ink}};
+@define-color card_bg_color {{card-wash.css}};
+@define-color card_fg_color {{ink}};
+@define-color accent_bg_color {{accent}};
+@define-color accent_fg_color {{ink-on-accent}};
+@define-color accent_color {{accent}};
+@define-color destructive_bg_color {{error}};
+@define-color destructive_fg_color {{ink-on-accent}};
+@define-color destructive_color {{error}};
+@define-color warning_bg_color {{warning}};
+@define-color warning_color {{warning}};
+@define-color borders {{border-strong.css}};
+
+@define-color ags_success {{success}};
+@define-color ags_accent_soft {{accent-soft}};
+@define-color ags_text_dim {{ink-muted}};
+@define-color ags_text_secondary {{ink-secondary}};
+@define-color ags_hairline {{hairline.css}};
+@define-color ags_hover {{hover.css}};
+@define-color ags_hover_strong {{hover-strong.css}};
+@define-color ags_wash {{wash.css}};
+@define-color ags_accent_fill {{accent-fill.css}};
+@define-color ags_focus_ring {{focus-ring.css}};
+@define-color ags_selection_row {{selection-row.css}};
+@define-color ags_row_selected {{row-selected.css}};
+@define-color ags_scrollbar_thumb {{scrollbar-thumb.css}};
+@define-color ags_scrollbar_thumb_hover {{scrollbar-thumb-hover.css}};
+@define-color ags_scrollbar_thumb_active {{scrollbar-thumb-active.css}};

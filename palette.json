@@ -1,0 +1,268 @@
+{
+  "version": 1,
+  "roles": {
+    "panel-base": {
+      "hex": "#0a0c11",
+      "note": "The frosted panel background every translucent surface sits on. Its alpha is per surface: see the panel-alpha-* roles."
+    },
+    "view-base": { "hex": "#16181c" },
+    "window-base": { "hex": "#1b1d22" },
+    "surface-raised": { "hex": "#23262c" },
+    "ink-on-accent": { "hex": "#14171c" },
+    "keyboard-panel-base": {
+      "hex": "#171a21",
+      "note": "The keyboard panel's own base colour; its alpha is panel-alpha-keyboard."
+    },
+
+    "ink-emphasis": { "hex": "#ffffff" },
+    "ink": { "hex": "#e6e6e6" },
+    "ink-secondary": { "hex": "#c9c9c9" },
+    "ink-muted": { "hex": "#a6a6a6" },
+    "ink-faint": {
+      "hex": "#a6a6a6",
+      "alpha": 0.55,
+      "frozen": true
+    },
+    "ink-faint-solid": {
+      "hex": "#606163",
+      "derive": "composite:ink-faint"
+    },
+
+    "accent": { "hex": "#8ab5f7" },
+    "accent-soft": {
+      "hex": "#adcbf9",
+      "derive": "blend-white:accent:0.30"
+    },
+    "accent-cyan": { "hex": "#4cccf2" },
+    "accent-violet": { "hex": "#b88cf2" },
+
+    "error": { "hex": "#ff6b6b" },
+    "warning": { "hex": "#f0b35a" },
+    "success": {
+      "hex": "#8af7ae",
+      "derive": "rotate-hue:accent:140"
+    },
+
+    "hairline": {
+      "hex": "#ffffff",
+      "alpha": 0.06,
+      "frozen": true
+    },
+    "border-active": {
+      "hex": "#cccccc",
+      "frozen": true,
+      "note": "Active window border of the compositor configuration."
+    },
+    "border-inactive": {
+      "hex": "#000000",
+      "alpha": 0,
+      "frozen": true,
+      "note": "Inactive window border of the compositor configuration: fully transparent."
+    },
+    "divider": { "alias": "hairline" },
+    "border-strong": {
+      "hex": "#ffffff",
+      "alpha": 0.1,
+      "frozen": true
+    },
+    "hover": {
+      "hex": "#ffffff",
+      "alpha": 0.08,
+      "frozen": true
+    },
+    "hover-strong": {
+      "hex": "#ffffff",
+      "alpha": 0.14,
+      "frozen": true
+    },
+    "wash": {
+      "hex": "#ffffff",
+      "alpha": 0.1,
+      "frozen": true
+    },
+    "card-wash": {
+      "hex": "#ffffff",
+      "alpha": 0.05,
+      "frozen": true
+    },
+
+    "selection-menu": {
+      "hex": "#8ab5f7",
+      "alpha": 0.22,
+      "frozen": true
+    },
+    "selection-row": {
+      "hex": "#8ab5f7",
+      "alpha": 0.35,
+      "frozen": true
+    },
+    "selection-note": {
+      "hex": "#8ab5f7",
+      "alpha": 0.45,
+      "frozen": true
+    },
+    "accent-fill": {
+      "hex": "#8ab5f7",
+      "alpha": 0.18,
+      "frozen": true
+    },
+    "focus-ring": {
+      "hex": "#8ab5f7",
+      "alpha": 0.55,
+      "frozen": true
+    },
+    "danger-fill": {
+      "hex": "#ff6b6b",
+      "alpha": 0.16,
+      "frozen": true
+    },
+    "row-highlight": {
+      "hex": "#ffffff",
+      "alpha": 0.1,
+      "frozen": true
+    },
+    "row-active": {
+      "hex": "#ffffff",
+      "alpha": 0.16,
+      "frozen": true
+    },
+    "scrollbar-thumb": {
+      "hex": "#ffffff",
+      "alpha": 0.22,
+      "frozen": true,
+      "note": "Resting step of the scrollbar pill."
+    },
+    "scrollbar-thumb-hover": {
+      "hex": "#ffffff",
+      "alpha": 0.3,
+      "frozen": true,
+      "note": "The scrollbar pill while the pointer is over the scrollbar."
+    },
+    "scrollbar-thumb-active": {
+      "hex": "#ffffff",
+      "alpha": 0.45,
+      "frozen": true,
+      "note": "The scrollbar pill while it is dragged."
+    },
+    "row-selected": {
+      "hex": "#0a0c11",
+      "alpha": 0.72,
+      "frozen": true
+    },
+    "text-shadow": {
+      "hex": "#000000",
+      "alpha": 0.44,
+      "frozen": true,
+      "note": "Colour only. The one-pixel offset that pairs with it is geometry and stays in the consumer."
+    },
+    "glow-alpha": {
+      "alpha": 0.22,
+      "frozen": true,
+      "note": "Alpha only: the accent halo's strength. The halo's colour is the accent role."
+    },
+
+    "panel-alpha-shell": {
+      "alpha": 0.5,
+      "frozen": true,
+      "note": "Alpha of panel-base on the shell's frosted panel."
+    },
+    "panel-alpha-card": {
+      "alpha": 0.5,
+      "frozen": true,
+      "note": "Alpha of panel-base on app cards (notes, files, media, portal, annotate, clipboard)."
+    },
+    "panel-alpha-dock-disc": {
+      "alpha": 0.45,
+      "frozen": true,
+      "note": "Alpha of panel-base on the dock disc."
+    },
+    "panel-alpha-dock-backdrop": {
+      "alpha": 0.35,
+      "frozen": true,
+      "note": "Alpha of panel-base on the dock backdrop."
+    },
+    "panel-alpha-dock-menu": {
+      "alpha": 0.55,
+      "frozen": true,
+      "note": "Alpha of panel-base on dock menus."
+    },
+    "panel-alpha-notification": {
+      "alpha": 0.5,
+      "frozen": true,
+      "note": "Alpha of panel-base on notification cards."
+    },
+    "panel-alpha-notification-critical": {
+      "alpha": 0.62,
+      "frozen": true,
+      "note": "Alpha of panel-base on critical notification cards."
+    },
+    "panel-alpha-keyboard": {
+      "alpha": 0.72,
+      "frozen": true,
+      "note": "Alpha of keyboard-panel-base on the on-screen keyboard panel."
+    },
+    "terminal-opacity": {
+      "alpha": 0.5,
+      "frozen": true,
+      "note": "kitty background_opacity. Stays in kitty.conf; no generated fragment may set it."
+    },
+    "scrim-opacity": {
+      "alpha": 0.5,
+      "frozen": true,
+      "note": "VS Code vibrancy scrim, calibrated against the kitty glass target."
+    },
+    "scrim-base": {
+      "hex": "#000000",
+      "frozen": true,
+      "note": "The scrim's own background override that scrim-opacity is applied to."
+    }
+  },
+
+  "syntax": {
+    "syntaxComment": "ink-muted",
+    "syntaxKeyword": "accent",
+    "syntaxFunction": "accent-soft",
+    "syntaxVariable": "ink",
+    "syntaxString": "success",
+    "syntaxNumber": "warning",
+    "syntaxType": "accent-cyan",
+    "syntaxOperator": "ink-emphasis",
+    "syntaxPunctuation": "ink-faint-solid"
+  },
+
+  "composites": {
+    "hairline": "#191b1f",
+    "hover": "#1e1f24",
+    "wash": "#222429",
+    "border-strong": "#222429",
+    "hover-strong": "#2c2e32",
+    "card-wash": "#16181d",
+    "accent-fill": "#212a3a",
+    "selection-menu": "#263144",
+    "selection-row": "#374761",
+    "selection-note": "#445878",
+    "focus-ring": "#506990",
+    "danger-fill": "#311b1f",
+    "text-shadow": "#06070a",
+    "ink-faint": "#606163"
+  },
+
+  "ansi": {
+    "0": "panel-base",
+    "1": "error",
+    "2": "success",
+    "3": "warning",
+    "4": "accent",
+    "5": "accent-violet",
+    "6": "accent-cyan",
+    "7": "ink-muted",
+    "8": "ink-faint-solid",
+    "9": "bright:error",
+    "10": "bright:success",
+    "11": "bright:warning",
+    "12": "bright:accent",
+    "13": "bright:accent-violet",
+    "14": "bright:accent-cyan",
+    "15": "ink"
+  }
+}

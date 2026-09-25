@@ -1,0 +1,44 @@
+/* Palette variables for the YouTube Music web view, injected as a stylesheet.
+   Variables only: the app's own markup is third-party and is not selected on
+   here. Whether these enter the existing override sheet or a separate sheet is
+   a consumer decision — the file is inert until its path is listed in the
+   app's config. */
+
+:root {
+  --house-panel-base: {{panel-base}};
+  --house-view-base: {{view-base}};
+  --house-window-base: {{window-base}};
+  --house-surface-raised: {{surface-raised}};
+  --house-ink-on-accent: {{ink-on-accent}};
+
+  --house-ink-emphasis: {{ink-emphasis}};
+  --house-ink: {{ink}};
+  --house-ink-secondary: {{ink-secondary}};
+  --house-ink-muted: {{ink-muted}};
+  --house-ink-faint: {{ink-faint.css}};
+
+  --house-accent: {{accent}};
+  --house-accent-soft: {{accent-soft}};
+  --house-accent-cyan: {{accent-cyan}};
+  --house-accent-violet: {{accent-violet}};
+
+  --house-error: {{error}};
+  --house-warning: {{warning}};
+  --house-success: {{success}};
+
+  --house-hairline: {{hairline.css}};
+  --house-border-strong: {{border-strong.css}};
+  --house-hover: {{hover.css}};
+  --house-hover-strong: {{hover-strong.css}};
+  --house-wash: {{wash.css}};
+  --house-card-wash: {{card-wash.css}};
+  --house-selection-row: {{selection-row.css}};
+  --house-accent-fill: {{accent-fill.css}};
+  --house-focus-ring: {{focus-ring.css}};
+  --house-danger-fill: {{danger-fill.css}};
+  --house-row-selected: {{row-selected.css}};
+
+  --house-glass-card: {{glass.card.css}};
+  --house-glass-dock-menu: {{glass.dock-menu.css}};
+  --house-glass-notification: {{glass.notification.css}};
+}

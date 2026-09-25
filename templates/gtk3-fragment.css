@@ -1,0 +1,35 @@
+/* Palette values for GTK3 apps. Imported by gtk-3.0/gtk.css ahead of the
+   rules that use these names, so the hand-copied @define-color block it
+   replaces has one owner again. */
+
+@define-color ags_surface {{window-base}};
+@define-color ags_surface_raised {{surface-raised}};
+@define-color ags_view {{view-base}};
+@define-color ags_text {{ink}};
+@define-color ags_text_emphasised {{ink-emphasis}};
+@define-color ags_text_secondary {{ink-secondary}};
+@define-color ags_text_dim {{ink-muted}};
+@define-color ags_ink_faint {{ink-faint.css}};
+@define-color ags_accent {{accent}};
+@define-color ags_accent_soft {{accent-soft}};
+@define-color ags_ink_on_accent {{ink-on-accent}};
+@define-color ags_danger {{error}};
+@define-color ags_warning {{warning}};
+@define-color ags_success {{success}};
+
+@define-color ags_hairline {{hairline.css}};
+@define-color ags_border_strong {{border-strong.css}};
+@define-color ags_hover {{hover.css}};
+@define-color ags_hover_strong {{hover-strong.css}};
+@define-color ags_wash {{wash.css}};
+@define-color ags_card_wash {{card-wash.css}};
+@define-color ags_accent_fill {{accent-fill.css}};
+@define-color ags_danger_fill {{danger-fill.css}};
+@define-color ags_focus_ring {{focus-ring.css}};
+@define-color ags_selection_menu {{selection-menu.css}};
+@define-color ags_selection_row {{selection-row.css}};
+@define-color ags_row_selected {{row-selected.css}};
+@define-color ags_scrollbar_thumb {{scrollbar-thumb.css}};
+@define-color ags_scrollbar_thumb_hover {{scrollbar-thumb-hover.css}};
+@define-color ags_scrollbar_thumb_active {{scrollbar-thumb-active.css}};
+@define-color ags_shadow {{text-shadow.css}};

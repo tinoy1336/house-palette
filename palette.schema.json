@@ -1,0 +1,2423 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "house-palette source",
+  "description": "Schema for palette.json, the single source of truth. Roles are named for the job they do. A role is either a solid hex string, or an object carrying an explicit alpha, an alias to another role, or an alpha-only value with no colour of its own.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "roles",
+    "syntax",
+    "composites",
+    "ansi"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Every role the artifact publishes. Both branches of a role hold the same schema so a role cannot change shape silently.",
+      "required": [
+        "panel-base",
+        "view-base",
+        "window-base",
+        "surface-raised",
+        "ink-on-accent",
+        "keyboard-panel-base",
+        "ink-emphasis",
+        "ink",
+        "ink-secondary",
+        "ink-muted",
+        "ink-faint",
+        "ink-faint-solid",
+        "accent",
+        "accent-soft",
+        "accent-cyan",
+        "accent-violet",
+        "error",
+        "warning",
+        "success",
+        "hairline",
+        "border-active",
+        "border-inactive",
+        "divider",
+        "border-strong",
+        "hover",
+        "hover-strong",
+        "wash",
+        "card-wash",
+        "selection-menu",
+        "selection-row",
+        "selection-note",
+        "accent-fill",
+        "focus-ring",
+        "danger-fill",
+        "row-highlight",
+        "row-active",
+        "scrollbar-thumb",
+        "scrollbar-thumb-hover",
+        "scrollbar-thumb-active",
+        "row-selected",
+        "text-shadow",
+        "glow-alpha",
+        "panel-alpha-shell",
+        "panel-alpha-card",
+        "panel-alpha-dock-disc",
+        "panel-alpha-dock-backdrop",
+        "panel-alpha-dock-menu",
+        "panel-alpha-notification",
+        "panel-alpha-notification-critical",
+        "panel-alpha-keyboard",
+        "terminal-opacity",
+        "scrim-opacity",
+        "scrim-base"
+      ],
+      "properties": {
+        "panel-base": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "view-base": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "window-base": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "surface-raised": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "ink-on-accent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "keyboard-panel-base": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "ink-emphasis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "ink": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "ink-secondary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "ink-muted": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "ink-faint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "ink-faint-solid": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "derive": {
+              "type": "string",
+              "description": "Formula the value must reproduce; a test recomputes it."
+            }
+          }
+        },
+        "accent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "accent-soft": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "derive": {
+              "type": "string",
+              "description": "Formula the value must reproduce; a test recomputes it."
+            }
+          }
+        },
+        "accent-cyan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "accent-violet": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "error": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "warning": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            }
+          }
+        },
+        "success": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "derive": {
+              "type": "string",
+              "description": "Formula the value must reproduce; a test recomputes it."
+            }
+          }
+        },
+        "hairline": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "border-active": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "border-inactive": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "divider": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alias"
+          ],
+          "properties": {
+            "alias": {
+              "type": "string",
+              "description": "Role this one spells: same value, one decision."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "border-strong": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "hover": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "hover-strong": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "wash": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "card-wash": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "selection-menu": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "selection-row": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "selection-note": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "accent-fill": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "focus-ring": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "danger-fill": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "row-highlight": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "row-active": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "scrollbar-thumb": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "scrollbar-thumb-hover": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "scrollbar-thumb-active": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "row-selected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            }
+          }
+        },
+        "text-shadow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "glow-alpha": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alpha",
+            "frozen"
+          ],
+          "properties": {
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "panel-alpha-shell": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alpha",
+            "frozen"
+          ],
+          "properties": {
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "panel-alpha-card": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alpha",
+            "frozen"
+          ],
+          "properties": {
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "panel-alpha-dock-disc": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alpha",
+            "frozen"
+          ],
+          "properties": {
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "panel-alpha-dock-backdrop": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alpha",
+            "frozen"
+          ],
+          "properties": {
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "panel-alpha-dock-menu": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alpha",
+            "frozen"
+          ],
+          "properties": {
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "panel-alpha-notification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alpha",
+            "frozen"
+          ],
+          "properties": {
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "panel-alpha-notification-critical": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alpha",
+            "frozen"
+          ],
+          "properties": {
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "panel-alpha-keyboard": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alpha",
+            "frozen"
+          ],
+          "properties": {
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "terminal-opacity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alpha",
+            "frozen"
+          ],
+          "properties": {
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "scrim-opacity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alpha",
+            "frozen"
+          ],
+          "properties": {
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Alpha carried by the role."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        },
+        "scrim-base": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hex",
+            "frozen"
+          ],
+          "properties": {
+            "hex": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}$",
+              "description": "Lower-case six-digit RGB."
+            },
+            "frozen": {
+              "const": true,
+              "description": "Tuned value carried unchanged; changing it is a deliberate edit to this file."
+            },
+            "note": {
+              "type": "string",
+              "description": "What the role is for, in one line."
+            }
+          }
+        }
+      }
+    },
+    "syntax": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Consumer syntax role to house role bindings. The value is a role name, never a colour, so a syntax role cannot drift from its house role.",
+      "required": [
+        "syntaxComment",
+        "syntaxKeyword",
+        "syntaxFunction",
+        "syntaxVariable",
+        "syntaxString",
+        "syntaxNumber",
+        "syntaxType",
+        "syntaxOperator",
+        "syntaxPunctuation"
+      ],
+      "properties": {
+        "syntaxComment": {
+          "type": "string",
+          "description": "House role this syntax role derives from."
+        },
+        "syntaxKeyword": {
+          "type": "string",
+          "description": "House role this syntax role derives from."
+        },
+        "syntaxFunction": {
+          "type": "string",
+          "description": "House role this syntax role derives from."
+        },
+        "syntaxVariable": {
+          "type": "string",
+          "description": "House role this syntax role derives from."
+        },
+        "syntaxString": {
+          "type": "string",
+          "description": "House role this syntax role derives from."
+        },
+        "syntaxNumber": {
+          "type": "string",
+          "description": "House role this syntax role derives from."
+        },
+        "syntaxType": {
+          "type": "string",
+          "description": "House role this syntax role derives from."
+        },
+        "syntaxOperator": {
+          "type": "string",
+          "description": "House role this syntax role derives from."
+        },
+        "syntaxPunctuation": {
+          "type": "string",
+          "description": "House role this syntax role derives from."
+        }
+      }
+    },
+    "composites": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Values that exist only because a consumer syntax cannot carry alpha: the role composited over panel-base. A test recomputes each one and allows one step per channel of rounding slack.",
+      "required": [
+        "hairline",
+        "hover",
+        "wash",
+        "border-strong",
+        "hover-strong",
+        "card-wash",
+        "accent-fill",
+        "selection-menu",
+        "selection-row",
+        "selection-note",
+        "focus-ring",
+        "danger-fill",
+        "text-shadow",
+        "ink-faint"
+      ],
+      "properties": {
+        "hairline": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "hover": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "wash": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "border-strong": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "hover-strong": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "card-wash": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "accent-fill": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "selection-menu": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "selection-row": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "selection-note": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "focus-ring": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "danger-fill": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "text-shadow": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        },
+        "ink-faint": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$"
+        }
+      }
+    },
+    "ansi": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The sixteen terminal slots: a house role name, or bright:<role> for the same role moved 25 percent toward white.",
+      "required": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15"
+      ],
+      "properties": {
+        "0": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "1": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "2": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "3": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "4": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "5": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "6": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "7": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "8": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "9": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "10": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "11": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "12": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "13": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "14": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        },
+        "15": {
+          "anyOf": [
+            {
+              "enum": [
+                "panel-base",
+                "view-base",
+                "window-base",
+                "surface-raised",
+                "ink-on-accent",
+                "keyboard-panel-base",
+                "ink-emphasis",
+                "ink",
+                "ink-secondary",
+                "ink-muted",
+                "ink-faint",
+                "ink-faint-solid",
+                "accent",
+                "accent-soft",
+                "accent-cyan",
+                "accent-violet",
+                "error",
+                "warning",
+                "success",
+                "hairline",
+                "border-active",
+                "border-inactive",
+                "divider",
+                "border-strong",
+                "hover",
+                "hover-strong",
+                "wash",
+                "card-wash",
+                "selection-menu",
+                "selection-row",
+                "selection-note",
+                "accent-fill",
+                "focus-ring",
+                "danger-fill",
+                "row-highlight",
+                "row-active",
+                "scrollbar-thumb",
+                "scrollbar-thumb-hover",
+                "scrollbar-thumb-active",
+                "row-selected",
+                "text-shadow",
+                "glow-alpha",
+                "panel-alpha-shell",
+                "panel-alpha-card",
+                "panel-alpha-dock-disc",
+                "panel-alpha-dock-backdrop",
+                "panel-alpha-dock-menu",
+                "panel-alpha-notification",
+                "panel-alpha-notification-critical",
+                "panel-alpha-keyboard",
+                "terminal-opacity",
+                "scrim-opacity",
+                "scrim-base"
+              ]
+            },
+            {
+              "type": "string",
+              "pattern": "^bright:[a-z0-9-]+$"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
