@@ -18,7 +18,6 @@
 
 import assert from "node:assert/strict"
 import { readFileSync, readdirSync } from "node:fs"
-import { hostname, userInfo } from "node:os"
 import { join, relative } from "node:path"
 import { test } from "node:test"
 import { repoRoot } from "../src/engine.ts"
@@ -84,8 +83,13 @@ const FORMATS = ["css", "scss", "sass", "ini", "lua", "conf", "toml", "yaml", "x
 /** The formats this repository's own artifacts are written in: allowed in prose, and the reason the scan exempts them. */
 const SELF_FORMATS = ["json", "jsonc", "markdown", "md"]
 
-/** Nothing may read as a note about the machine, its owner or the session that wrote it. */
-const PROVENANCE = ["this machine", "my machine", "the owner", "the maintainer", "/home/", "/Users/", "session", "subagent", "foreman", "worker", "crew"]
+/**
+ * The shapes a leaked identity takes: a home path, or a phrase naming the machine
+ * or its owner. The scan looks for shapes rather than for the name of the machine
+ * running it — a public suite has to behave the same everywhere, and probing the
+ * running host fails wherever its login name happens to be an ordinary word.
+ */
+const PROVENANCE = ["this machine", "my machine", "the owner", "the maintainer", "/home/", "/Users/", "C:\\Users", "session", "subagent", "foreman", "worker", "crew"]
 
 /**
  * Samples written out here rather than read from the lists above: deleting a
@@ -168,6 +172,17 @@ test("a planted consumer name is caught in every kind of file the walk accepts",
   })
 })
 
+test("a home path or a machine phrase is caught as a shape, not as this machine's name", async () => {
+  await withTempDir((dir) => {
+    writeInto(join(dir, "leak.txt"), "the profile lives at /home/somebody/profile and this machine runs it\n")
+    writeInto(join(dir, "leak-windows.txt"), "C:\\Users\\somebody\\profile\\palette.json\n")
+    const violations = scan(PROVENANCE, dir)
+    for (const expected of ["leak.txt: /home/", "leak.txt: this machine", "leak-windows.txt: C:\\Users"]) {
+      assert.ok(violations.includes(expected), `${expected} escaped: ${violations.join(", ") || "nothing was reported"}`)
+    }
+  })
+})
+
 test("the walk covers the repository, not a sample of it", () => {
   const scanned = tree(repoRoot).text.filter((path) => path !== SELF)
   for (const path of ["palette.json", "palette.schema.json", "src/engine.ts", "src/colour.ts", "README.md", "AGENTS.md", "docs/template-contract.md", ".github/workflows/ci.yml", "tests/helpers.ts", "examples/palette-sheet.template.ts", "bin/render"]) {
@@ -231,6 +246,6 @@ test("nothing in the repository names a carrier format", () => {
   assert.deepEqual(scan(FORMATS), [])
 })
 
-test("nothing in the repository describes the machine, its owner or the session", () => {
-  assert.deepEqual(scan([...PROVENANCE, hostname(), userInfo().username]), [])
+test("nothing in the repository describes the machine, its owner or the run that wrote it", () => {
+  assert.deepEqual(scan(PROVENANCE), [])
 })
