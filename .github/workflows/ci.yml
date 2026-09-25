@@ -1,0 +1,38 @@
+# The suite a dependent repository relies on, run where anyone can see it.
+#
+# One job, one pinned Node version, no install step: the tree has no dependency
+# of any kind, so `node` and the checkout are the whole environment. A job that
+# installed something would be installing a dependency this repository promises
+# not to have.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          # The version the sources are written for: it strips types on its own.
+          node-version: 22
+      - name: Run the suite
+        run: node --test tests/*.test.ts
+      # The example is gated the way a consuming repository gates its own
+      # generated file: re-render, compare, and fail on any drift. The revision
+      # is pinned so the committed record is the one this run produces.
+      - name: Gate the committed example
+        run: |
+          bin/render --check \
+            --template examples/palette-sheet.template.ts \
+            --out examples/golden/palette-sheet.md \
+            --record examples/golden/palette-sheet.record.json \
+            --revision example
